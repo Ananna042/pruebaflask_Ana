@@ -1,6 +1,46 @@
 from flask import Flask, url_for
-
+import sqlite3
 app = Flask(__name__)
+
+def dict_factory(cursor. row):
+    """Arama un dicc con los valores e la fila"""
+fields = [column[0] for column in cursor.description]
+return {key: value for key, value in zip(fields, row)}
+
+db = None
+def abrirConexion():
+    global db
+    db = sqlite3.connect("instance/datos.sqlite")
+    db.row_factory = dict_factory
+
+def cerrarConexion():
+    global db 
+    db.close()
+    db = None
+
+@app.route("/test-db")
+def testDB():
+    abrirConexion()
+    cursor = db.cursor()
+    cursor.execute("SELECT(*) AS cant FROM usuarios; ")
+    res = cursor.fetchone()
+    registros = res["cant"]
+    cerrarConexion()
+    return f"Hay {registros} registros en la tabla de usuario"
+
+@app.route("crear-usuario")#EJ PARA HACER ACT PERO CON 2 ARG
+def testCrear():
+    nombre = "leandro"
+    email = "leandro@etec.uba.ar"
+    abrirConexion()
+    cursor = db.cursor()
+    consulta = "INSERT INTO usuarios(usuario, email) VALUES (?, ?)"
+    cursor.execute(consulta, (nombre, email))
+    db.commit()
+    cerrarConexon()
+    return f"Registro agregado ({nombre                                                                                                                                                                                                                                                                                                                                                                                                                                      })"
+
+
 
 
 @app.route('/')
@@ -14,6 +54,7 @@ def chau():
 @app.route('/saludar/por-nombre/<string:nombre>')
 def sxn(nombre):
     return f"<p>Hola {nombre}</p>"
+
 
 @app.route('/tirar-dado/int:caras>')
 def dado(caras):
@@ -38,3 +79,6 @@ def main():
     <br>
     <a href="{url_dado}">Tirar_dado</a>
     """
+
+def abrirConexion().
+return sqilte3.connect
