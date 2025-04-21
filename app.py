@@ -1,11 +1,12 @@
 from flask import Flask, url_for
+from flask import render_template
 import sqlite3
 app = Flask(__name__)
 
-def dict_factory(cursor. row):
+def dict_factory(cursor,row):
     """Arama un dicc con los valores e la fila"""
-fields = [column[0] for column in cursor.description]
-return {key: value for key, value in zip(fields, row)}
+    fields = [column[0] for column in cursor.description]
+    return {key: value for key, value in zip(fields, row)}
 
 db = None
 def abrirConexion():
@@ -28,7 +29,7 @@ def testDB():
     cerrarConexion()
     return f"Hay {registros} registros en la tabla de usuario"
 
-@app.route("crear-usuario")#EJ PARA HACER ACT PERO CON 2 ARG
+@app.route("/crear-usuario")#EJ PARA HACER ACT PERO CON 2 ARG
 def testCrear():
     nombre = "leandro"
     email = "leandro@etec.uba.ar"
@@ -80,5 +81,18 @@ def main():
     <a href="{url_dado}">Tirar_dado</a>
     """
 
-def abrirConexion().
-return sqilte3.connect
+
+
+@app.route("/mostrar-datos/<int:id>")
+def datos_plantilla(id):
+    abrirConexion()
+    cursor = db.cursor()
+    cursor.execute("SELECT id,usuario, email FROM usuarios WHERE id = ?",(id,))
+    res = cursor.fetchone()
+    cerrarConexion()
+    usuario = None
+    email = None
+    if res != None:
+        usuario = res['usuario']
+        email = res ['email']
+    return render_template("datos.html", id=id, usuario=usuario, email=email)
